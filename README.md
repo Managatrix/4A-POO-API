@@ -2,4 +2,4 @@
 TP1 de la matière POO API et Outillages
 
 Build Status
-![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+[![Java CI with Maven](https://github.com/Managatrix/4A-POO-TP/actions/workflows/maven.yml/badge.svg)](https://github.com/Managatrix/4A-POO-TP/actions/workflows/maven.yml)
