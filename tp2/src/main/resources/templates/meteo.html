@@ -10,8 +10,14 @@
 <body>
     <div th:insert="~{addresses :: navbar}"></div>
 
-    <p th:text="'Meteo a l\'adresse ' + ${adresseP}"></p>
-    <p th:text="'Infos adresse : ' + ${adresseEtalab}"></p>
+    <p th:text="'Adresse demandee : ' + ${adresseP}"></p>
+    <p th:text="'Adresse trouvee : ' + ${adresseEtalab.getFeatures()[0].getProperties().getLabel()}"></p>
+    <p th:text="'Adresse2 trouvee : ' + ${adresseEtalab2}"></p>
+    <p th:text="'Temperature actuelle : ' + ${instantMeasure}"></p>
+    <p th:text="'Previsions :'"></p>
+    <!-- <p th:text="'Aujourd\'hui ' + ${dailyforecast[0].getForecast().getWeather()}"></p>
+    <p th:text="'Demain ' + ${dailyforecast[1].getForecast().getWeather()}"></p>
+    <p th:text="'Apres-demain ' + ${dailyforecast[2].getForecast().getWeather()}"></p> -->
 </body>
 
 </html>

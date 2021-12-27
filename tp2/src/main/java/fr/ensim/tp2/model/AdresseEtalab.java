@@ -1,8 +1,6 @@
 package fr.ensim.tp2.model;
 
-import java.io.Serializable;
-
-public class AdresseEtalab implements Serializable {
+public class AdresseEtalab {
     
     private String label;
     private double score;

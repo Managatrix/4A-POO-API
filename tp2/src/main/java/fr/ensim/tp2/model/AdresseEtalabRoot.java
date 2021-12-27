@@ -2,7 +2,7 @@ package fr.ensim.tp2.model;
 
 import java.util.List;
 
-public class Root {
+public class AdresseEtalabRoot {
     private String type;
     private String version;
     private List<Feature> features;
