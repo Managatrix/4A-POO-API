@@ -1,6 +1,11 @@
 package fr.ensim.tp2.controller;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -10,16 +15,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
-import fr.ensim.tp2.model.AdresseEtalab;
 import fr.ensim.tp2.model.AdresseEtalabRoot;
-import fr.ensim.tp2.model.InstantMeasurePojo;
+import fr.ensim.tp2.model.DailyForecastPojo.DailyForecastRoot;
 import fr.ensim.tp2.model.InstantMeasurePojo.InstantMeasureRoot;
 
 @Controller
 public class MeteoController {
         @PostMapping("/meteo")
         public String showMeteo(@RequestParam(value = "address", defaultValue = "Le Mans") String addressPOST,
-                        Model model) {
+                        Model model) throws FileNotFoundException {
+                HashMap<Integer, String> WEATHER_CODES = new HashMap<>();
+                writeWeatherCodesHashMap(WEATHER_CODES,
+                                new File("src/main/resources/static/weatherCodes.txt"));
                 RestTemplate restTemplate = new RestTemplate();
 
                 String baseUrlEtalab = "https://api-adresse.data.gouv.fr/search/?q=";
@@ -27,8 +34,6 @@ public class MeteoController {
 
                 AdresseEtalabRoot adresseRestTemplate = restTemplate.getForObject(queryUrlEtalab,
                                 AdresseEtalabRoot.class);
-                AdresseEtalab adresseEtalabRestTemplate = restTemplate.getForObject(queryUrlEtalab,
-                                AdresseEtalab.class);
 
                 String queryCoordinates = adresseRestTemplate.getFeatures().get(0).getGeometry().getCoordinates()[1]
                                 + "," + adresseRestTemplate.getFeatures().get(0).getGeometry().getCoordinates()[0];
@@ -45,17 +50,35 @@ public class MeteoController {
                 // ArrayList.class);
 
                 // Ceci fonctionne :
-                ResponseEntity<InstantMeasureRoot[]> response = restTemplate
-                                .getForEntity(queryUrlInstantMeasure, InstantMeasureRoot[].class);
-                InstantMeasureRoot[] instantMeasures = response.getBody();
+                InstantMeasureRoot[] instantMeasures = restTemplate
+                                .getForEntity(queryUrlInstantMeasure, InstantMeasureRoot[].class).getBody();
+
+                ArrayList<DailyForecastRoot> dailyForecastList = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                        String queryUrlDailyForecast = baseUrlMeteoConcept + "forecast/daily/" + i + "?token=" + TOKEN
+                                        + "&latlng=" + queryCoordinates;
+
+                        DailyForecastRoot dailyForecast = restTemplate.getForObject(queryUrlDailyForecast,
+                                        DailyForecastRoot.class);
+                        dailyForecastList.add(dailyForecast);
+                }
 
                 model.addAttribute("adresseP", addressPOST);
                 model.addAttribute("adresseEtalab", adresseRestTemplate);
-                model.addAttribute("adresseEtalab2", adresseEtalabRestTemplate);
-                model.addAttribute("instantMeasure",
-                                instantMeasures[0].getObservation().getOutside_temperature().getValue());
-                // model.addAttribute("dailyForecast", dailyForecast);
+                model.addAttribute("instantMeasure", instantMeasures[0]);
+                model.addAttribute("dailyForecast", dailyForecastList);
+                model.addAttribute("WEATHER_CODES", WEATHER_CODES);
 
                 return "meteo";
+        }
+
+        void writeWeatherCodesHashMap(Map<Integer, String> map, File csvDoc) throws FileNotFoundException {
+                try (Scanner scanner = new Scanner(csvDoc)) {
+                        while (scanner.hasNextLine()) {
+                                String line = scanner.nextLine();
+                                String[] lineParts = line.split("\t");
+                                map.put(Integer.parseInt(lineParts[0]), lineParts[1]);
+                        }
+                }
         }
 }
