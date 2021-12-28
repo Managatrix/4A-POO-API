@@ -54,7 +54,7 @@ public class MeteoController {
                                 .getForEntity(queryUrlInstantMeasure, InstantMeasureRoot[].class).getBody();
 
                 ArrayList<DailyForecastRoot> dailyForecastList = new ArrayList<>();
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 8; i++) {
                         String queryUrlDailyForecast = baseUrlMeteoConcept + "forecast/daily/" + i + "?token=" + TOKEN
                                         + "&latlng=" + queryCoordinates;
 

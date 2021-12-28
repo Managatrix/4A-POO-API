@@ -17,9 +17,20 @@
     </p>
     <br>
     <p th:text="'Previsions :'"></p>
-    <p th:text="'Aujourd\'hui : ' + ${WEATHER_CODES.get(dailyForecast[0].getForecast().getWeather())}"></p>
-    <p th:text="'Demain : ' + ${WEATHER_CODES.get(dailyForecast[1].getForecast().getWeather())}"></p>
-    <p th:text="'Apres-demain : ' + ${WEATHER_CODES.get(dailyForecast[2].getForecast().getWeather())}"></p>
+    <table>
+        <thead>
+            <tr>
+                <th>Jour</th>
+                <th>Météo prévue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="i: ${#numbers.sequence(0, 7)}">
+                <td th:text="${i}"></td>
+                <td th:text="${WEATHER_CODES.get(dailyForecast[i].getForecast().getWeather())}"></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 
 </html>
